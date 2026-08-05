@@ -1,0 +1,74 @@
+name: Send 1Password-backed workflow lifecycle email
+description: Send sanitized GitHub Actions lifecycle email through Microsoft Graph using a vault-scoped 1Password service account.
+inputs:
+  op-service-account-token:
+    description: Vault-scoped 1Password service-account token.
+    required: true
+  phase:
+    description: "Notification phase: started, success, failure, cancelled, or notification_failure."
+    required: true
+  status:
+    description: Workflow status to report.
+    required: true
+  workflow-name:
+    description: Human-readable workflow name. Defaults to the source workflow from workflow_run.
+    required: false
+    default: ""
+  workflow-file:
+    description: Workflow file path, when known.
+    required: false
+    default: ""
+  workload-summary:
+    description: Concise sanitized workload or job summary.
+    required: false
+    default: ""
+  troubleshooting:
+    description: Suggested first troubleshooting action for failures.
+    required: false
+    default: Open the source workflow run and inspect the first failed job.
+  correlation-id:
+    description: Stable run correlation ID.
+    required: false
+    default: ""
+  github-token:
+    description: Optional read-only token used to summarize failed jobs and steps.
+    required: false
+    default: ""
+  dry-run:
+    description: Render and validate without sending.
+    required: false
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Load Microsoft Graph credential from 1Password
+      id: load-email-secrets
+      uses: 1password/load-secrets-action@e544b780808654ba8ceba5fb2fe2897103d92ff4 # v5.0.0
+      with:
+        version: 2.35.0
+      env:
+        OP_SERVICE_ACCOUNT_TOKEN: ${{ inputs.op-service-account-token }}
+        M365_TENANT_ID: op://Boneman/zeucfl4hldmzxy2dxk52hogahy/tenant_id
+        M365_CLIENT_ID: op://Boneman/zeucfl4hldmzxy2dxk52hogahy/client_id
+        M365_CLIENT_SECRET: op://Boneman/zeucfl4hldmzxy2dxk52hogahy/client_secret
+        M365_SENDER: op://Boneman/zeucfl4hldmzxy2dxk52hogahy/sender
+        M365_RECIPIENT: op://Boneman/zeucfl4hldmzxy2dxk52hogahy/recipient
+
+    - name: Send workflow lifecycle email
+      shell: bash
+      env:
+        NOTIFY_PHASE: ${{ inputs.phase }}
+        NOTIFY_STATUS: ${{ inputs.status }}
+        NOTIFY_WORKFLOW_NAME: ${{ inputs.workflow-name }}
+        NOTIFY_WORKFLOW_FILE: ${{ inputs.workflow-file }}
+        NOTIFY_WORKLOAD_SUMMARY: ${{ inputs.workload-summary }}
+        NOTIFY_TROUBLESHOOTING: ${{ inputs.troubleshooting }}
+        NOTIFY_CORRELATION_ID: ${{ inputs.correlation-id }}
+        M365_TENANT_ID: ${{ steps.load-email-secrets.outputs.M365_TENANT_ID }}
+        M365_CLIENT_ID: ${{ steps.load-email-secrets.outputs.M365_CLIENT_ID }}
+        M365_CLIENT_SECRET: ${{ steps.load-email-secrets.outputs.M365_CLIENT_SECRET }}
+        M365_SENDER: ${{ steps.load-email-secrets.outputs.M365_SENDER }}
+        M365_RECIPIENT: ${{ steps.load-email-secrets.outputs.M365_RECIPIENT }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        NOTIFY_DRY_RUN: ${{ inputs.dry-run }}
+      run: python3 "$GITHUB_ACTION_PATH/send_workflow_email.py"
