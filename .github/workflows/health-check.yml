@@ -1,0 +1,37 @@
+name: Lifecycle email health check
+
+on:
+  schedule:
+    - cron: "23 14 * * 1"
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Render and validate without sending an email.
+        type: boolean
+        default: true
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: lifecycle-email-health-check
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Validate lifecycle email delivery
+        uses: Thetromboneman1/github-actions-lifecycle-email@ed1d0bdeb97cbaf7f967fd6e60178c98d1bd6819
+        with:
+          op-service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          phase: started
+          status: synthetic-health-check
+          workflow-name: Lifecycle email health check
+          workflow-file: .github/workflows/health-check.yml
+          workload-summary: Validate the centralized 1Password and Microsoft Graph notification chain.
+          correlation-id: ${{ github.repository }}:${{ github.run_id }}:${{ github.run_attempt }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && 'true' || 'false' }}
