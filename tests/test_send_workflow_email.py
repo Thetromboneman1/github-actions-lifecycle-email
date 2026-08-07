@@ -158,3 +158,15 @@ def test_success_render_does_not_query_failed_jobs(monkeypatch):
     text, _html = module.render_bodies("success", "success", context)
 
     assert "Status: success" in text
+
+
+def test_skipped_phase_has_an_explicit_nonfailure_subject():
+    context = {
+        "repository": "owner/repo",
+        "workflow": "Deploy",
+        "run_number": "9",
+    }
+
+    assert module.subject_for("skipped", context) == (
+        "[GitHub Actions][SKIPPED] owner/repo - Deploy - Run 9"
+    )

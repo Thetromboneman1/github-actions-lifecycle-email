@@ -1,6 +1,6 @@
 # GitHub Actions lifecycle email
 
-This public, secret-free composite action sends standardized GitHub Actions start, success, failure, and cancellation emails through Microsoft Graph. Runtime credentials remain in the 1Password vault `Boneman`; callers provide only a narrowly scoped service-account token through the `OP_SERVICE_ACCOUNT_TOKEN` GitHub Actions secret.
+This public, secret-free composite action sends standardized GitHub Actions start, success, failure, cancellation, and skipped emails through Microsoft Graph. Runtime credentials remain in the 1Password vault `Boneman`; callers provide only a narrowly scoped service-account token through the `OP_SERVICE_ACCOUNT_TOKEN` GitHub Actions secret.
 
 ## Security model
 
@@ -36,7 +36,7 @@ jobs:
         uses: Thetromboneman1/github-actions-lifecycle-email@IMMUTABLE_COMMIT_SHA
         with:
           op-service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          phase: ${{ github.event.action == 'in_progress' && 'started' || (github.event.workflow_run.conclusion == 'success' && 'success' || github.event.workflow_run.conclusion == 'cancelled' && 'cancelled' || 'failure') }}
+          phase: ${{ github.event.action == 'in_progress' && 'started' || (github.event.workflow_run.conclusion == 'success' && 'success' || github.event.workflow_run.conclusion == 'cancelled' && 'cancelled' || github.event.workflow_run.conclusion == 'skipped' && 'skipped' || 'failure') }}
           status: ${{ github.event.action == 'in_progress' && 'started' || github.event.workflow_run.conclusion }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```

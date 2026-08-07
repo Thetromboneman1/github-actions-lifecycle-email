@@ -24,7 +24,14 @@ REQUIRED_SECRET_ENV = (
     "M365_RECIPIENT",
 )
 
-ALLOWED_PHASES = {"started", "success", "failure", "cancelled", "notification_failure"}
+ALLOWED_PHASES = {
+    "started",
+    "success",
+    "failure",
+    "cancelled",
+    "skipped",
+    "notification_failure",
+}
 HEADER_SAFE = re.compile(r"^[^\r\n]+$")
 EMAIL_SAFE = re.compile(r"^[^@\s\r\n]+@[^@\s\r\n]+\.[^@\s\r\n]+$")
 
@@ -172,6 +179,7 @@ def subject_for(phase: str, context: dict[str, str]) -> str:
         "success": "SUCCESS",
         "failure": "FAILED",
         "cancelled": "CANCELLED",
+        "skipped": "SKIPPED",
         "notification_failure": "NOTIFICATION-FAILED",
     }[phase]
     subject = f"[GitHub Actions][{label}] {context['repository']} - {context['workflow']} - Run {context['run_number']}"

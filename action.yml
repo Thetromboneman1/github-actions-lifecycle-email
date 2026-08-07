@@ -5,7 +5,7 @@ inputs:
     description: Vault-scoped 1Password service-account token.
     required: true
   phase:
-    description: "Notification phase: started, success, failure, cancelled, or notification_failure."
+    description: "Notification phase: started, success, failure, cancelled, skipped, or notification_failure."
     required: true
   status:
     description: Workflow status to report.
