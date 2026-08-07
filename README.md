@@ -60,4 +60,20 @@ python3 -m pytest -q
 actionlint .github/workflows/ci.yml
 ```
 
-Maintenance status: active. Owner: Thetromboneman1. Last audited: 2026-08-05.
+Maintenance status: active. Owner: Thetromboneman1. Last audited: 2026-08-06.
+
+<!-- documentation-health:start -->
+## Current repository state
+
+![github-actions-lifecycle-email system architecture](docs/architecture/github-actions-lifecycle-email-system-architecture.png)
+
+- **Default branch:** `main`
+- **Implementation fingerprint:** `ad0fbd76100c7dad`
+- **Detected structure:** Automation modules, GitHub Actions, Tests and validation, Maintained documentation.
+- **Documentation contract:** editable diagram sources, committed PNG renderings,
+  resolved local image links, and generated state are checked on every commit.
+- **Refresh command:** `python3 scripts/documentation_health.py --write`
+
+See [repository state](docs/REPOSITORY_STATE.md) and the
+[architecture asset guide](docs/architecture/README.md).
+<!-- documentation-health:end -->
