@@ -9,6 +9,9 @@ This public, secret-free composite action sends standardized GitHub Actions star
 - The action never checks out source code from the observed workflow.
 - Callers grant only `actions: read` and `contents: read`.
 - The action and all nested third-party actions are pinned to immutable commit SHAs.
+- Successful deliveries create a run-and-phase cache marker; repeated
+  `workflow_run` events are suppressed without suppressing a retry after a
+  notification failure.
 - Notification failure is visible in the observer workflow but cannot change the source workflow result.
 
 ## Observer workflow
@@ -43,9 +46,9 @@ jobs:
 
 ## Required secret
 
-| GitHub secret | Source |
-|---|---|
-| `OP_SERVICE_ACCOUNT_TOKEN` | 1Password item `Local / Boneman Topology / Automation Service Account`, field `credential` |
+| GitHub secret                | Source                                                                                       |
+| ---------------------------- | -------------------------------------------------------------------------------------------- |
+| `OP_SERVICE_ACCOUNT_TOKEN`   | 1Password item `Local / Boneman Topology / Automation Service Account`, field `credential`   |
 
 Microsoft Graph values are held in the 1Password item `GitHub Actions Lifecycle Email (Microsoft Graph)`. Do not copy their values into source control or documentation.
 

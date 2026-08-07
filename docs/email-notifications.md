@@ -13,10 +13,13 @@ Maintenance status is active.
 2. The observer calls this composite action at an immutable commit SHA.
 3. The official 1Password action exchanges `OP_SERVICE_ACCOUNT_TOKEN` for the
    five Microsoft Graph fields in vault `Boneman`.
-4. `send_workflow_email.py` maps terminal conclusions explicitly, including
+4. The action restores a source-run-and-phase delivery marker. A marker hit
+   suppresses duplicate webhook deliveries; a failed delivery creates no
+   marker and remains retryable.
+5. `send_workflow_email.py` maps terminal conclusions explicitly, including
    `skipped`, renders sanitized run metadata, applies bounded
    retries, and calls Microsoft Graph `sendMail`.
-5. Notification failure fails only the observer workflow and cannot change the
+6. Notification failure fails only the observer workflow and cannot change the
    source workflow conclusion.
 
 External-fork workflow runs are excluded by the repository adapter so

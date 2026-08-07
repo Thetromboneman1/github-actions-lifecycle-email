@@ -41,8 +41,17 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Restore notification delivery marker
+      id: restore-notification-marker
+      if: inputs.dry-run != 'true'
+      uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+      with:
+        path: .workflow-lifecycle-email-marker
+        key: lifecycle-email-${{ inputs.correlation-id }}-${{ inputs.phase }}
+
     - name: Load Microsoft Graph credential from 1Password
       id: load-email-secrets
+      if: steps.restore-notification-marker.outputs.cache-hit != 'true'
       uses: 1password/load-secrets-action@e544b780808654ba8ceba5fb2fe2897103d92ff4 # v5.0.0
       with:
         version: 2.35.0
@@ -55,6 +64,7 @@ runs:
         M365_RECIPIENT: op://Boneman/zeucfl4hldmzxy2dxk52hogahy/recipient
 
     - name: Send workflow lifecycle email
+      if: steps.restore-notification-marker.outputs.cache-hit != 'true'
       shell: bash
       env:
         NOTIFY_PHASE: ${{ inputs.phase }}
@@ -72,3 +82,22 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         NOTIFY_DRY_RUN: ${{ inputs.dry-run }}
       run: python3 "$GITHUB_ACTION_PATH/send_workflow_email.py"
+
+    - name: Record successful notification delivery
+      if: inputs.dry-run != 'true' && steps.restore-notification-marker.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        mkdir -p .workflow-lifecycle-email-marker
+        printf '%s\n' "${{ inputs.correlation-id }}:${{ inputs.phase }}" > .workflow-lifecycle-email-marker/delivered
+
+    - name: Save notification delivery marker
+      if: inputs.dry-run != 'true' && steps.restore-notification-marker.outputs.cache-hit != 'true'
+      uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+      with:
+        path: .workflow-lifecycle-email-marker
+        key: lifecycle-email-${{ inputs.correlation-id }}-${{ inputs.phase }}
+
+    - name: Report duplicate suppression
+      if: inputs.dry-run != 'true' && steps.restore-notification-marker.outputs.cache-hit == 'true'
+      shell: bash
+      run: echo 'Duplicate lifecycle notification suppressed for the source run and phase.'
