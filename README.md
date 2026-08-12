@@ -63,6 +63,7 @@ actionlint .github/workflows/ci.yml
 Maintenance status: active. Owner: Thetromboneman1. Last audited: 2026-08-06.
 
 <!-- documentation-health:start -->
+
 ## Current repository state
 
 ![github-actions-lifecycle-email system architecture](docs/architecture/github-actions-lifecycle-email-system-architecture.png)
