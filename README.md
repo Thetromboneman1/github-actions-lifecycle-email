@@ -69,7 +69,7 @@ Maintenance status: active. Owner: Thetromboneman1. Last audited: 2026-08-06.
 ![github-actions-lifecycle-email system architecture](docs/architecture/github-actions-lifecycle-email-system-architecture.png)
 
 - **Default branch:** `main`
-- **Implementation fingerprint:** `ad0fbd76100c7dad`
+- **Implementation fingerprint:** `f31441bd3672e3c3`
 - **Detected structure:** Automation modules, GitHub Actions, Tests and validation, Maintained documentation.
 - **Documentation contract:** editable diagram sources, committed PNG renderings,
   resolved local image links, and generated state are checked on every commit.

@@ -44,7 +44,7 @@ runs:
     - name: Restore notification delivery marker
       id: restore-notification-marker
       if: inputs.dry-run != 'true'
-      uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: .workflow-lifecycle-email-marker
         key: lifecycle-email-${{ inputs.correlation-id }}-${{ inputs.phase }}
@@ -52,7 +52,7 @@ runs:
     - name: Load Microsoft Graph credential from 1Password
       id: load-email-secrets
       if: steps.restore-notification-marker.outputs.cache-hit != 'true'
-      uses: 1password/load-secrets-action@e544b780808654ba8ceba5fb2fe2897103d92ff4 # v5.0.0
+      uses: 1password/load-secrets-action@70062d7a876d3eb6334754fa26efd2fbd90c32f2 # v5.0.1
       with:
         version: 2.35.0
       env:
@@ -92,7 +92,7 @@ runs:
 
     - name: Save notification delivery marker
       if: inputs.dry-run != 'true' && steps.restore-notification-marker.outputs.cache-hit != 'true'
-      uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: .workflow-lifecycle-email-marker
         key: lifecycle-email-${{ inputs.correlation-id }}-${{ inputs.phase }}
